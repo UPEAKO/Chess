@@ -30,7 +30,7 @@ public class InternetPartOfChess extends Thread{
         super.run();
         /*连接服务端,初始化输入输出流*/
         try {
-            socket = new Socket("192.168.1.110",30000);
+            socket = new Socket("172.96.219.84",30000);
             if (!socket.isConnected() || socket.isClosed()) {
                 Log.d("Socket连接诶", "run: 失败");
                 return;
@@ -87,6 +87,13 @@ public class InternetPartOfChess extends Thread{
                             msg.arg1 = chessNumInOpponent;
                             uiHandler.sendMessage(msg);
                         }
+                        //我方将领死亡
+                        if (sign == 555) {
+                            msg.what = 555;
+                            msg.arg1 = chessNumInOpponent;
+                            msg.arg2 = chessLocationInOpponent;
+                            uiHandler.sendMessage(msg);
+                        }
                         Log.d("Socket连接诶", "run: 从服务端接收");
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -130,6 +137,20 @@ public class InternetPartOfChess extends Thread{
                             dataOutputStream.writeInt(chessNumInOpponent3);
                             dataOutputStream.writeInt(chessLocationInOpponent3);
                             dataOutputStream.writeInt(sign3);
+                            dataOutputStream.flush();
+                            Log.d("Socket连接诶", "run: 发送给服务端");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case 555:
+                        int chessNumInOpponent4 = msg.arg1;
+                        int chessLocationInOpponent4 = msg.arg2;
+                        int sign4 = 555;
+                        try {
+                            dataOutputStream.writeInt(chessNumInOpponent4);
+                            dataOutputStream.writeInt(chessLocationInOpponent4);
+                            dataOutputStream.writeInt(sign4);
                             dataOutputStream.flush();
                             Log.d("Socket连接诶", "run: 发送给服务端");
                         } catch (IOException e) {

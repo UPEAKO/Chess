@@ -68,6 +68,10 @@ public class DoChess extends View {
                         else if (chessNum == 696)
                             doChess.chessTool.doFor696();
                         break;
+                    case 555:
+                        //我方将领已亡,toast失败,设置不接受触碰消息,即能断绝一切交流
+                        doChess.chessTool.gameOver(chessNum,newChessLocation);
+                        break;
                     default:
                         break;
                 }

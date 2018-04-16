@@ -25,12 +25,12 @@ public class chessTool {
     /**
      * 判断红黑方,决定选择哪个棋盘
      */
-    public boolean isRed = false;
+    public boolean isRed = true;
 
     /**
      * 控制己方是否可走子
      */
-    boolean isMeToMove = false;
+    boolean isMeToMove = true;
 
     /**
      * 画笔
@@ -91,6 +91,18 @@ public class chessTool {
         }
     }
 
+    public void gameOver(int chessNum,int newChessLocation) {
+        int chessNumToDeath = searchChessNumBySubscript(newChessLocation);
+        if (chessNumToDeath >= 0)
+            currentChessLocation.get(chessNumToDeath).isLive = false;
+        currentChessLocation.get(chessNum).subScript = newChessLocation;
+        doChess.invalidate();
+        //己方子不可走
+        isMeToMove = false;
+        Toast toast=Toast.makeText(doChess.getContext(), "您失败了", Toast.LENGTH_LONG);
+        toast.show();
+    }
+
     /**
      * 该函数执行时机有待考究
      * 接收到参数666,设为黑方
@@ -144,6 +156,8 @@ public class chessTool {
         doChess.invalidate();
         //己方可走子了
         isMeToMove = true;
+        Toast toast=Toast.makeText(doChess.getContext(), "该你了", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     /**
@@ -161,6 +175,8 @@ public class chessTool {
         doChess.invalidate();
         //己方子可走
         isMeToMove = true;
+        Toast toast=Toast.makeText(doChess.getContext(), "该你了", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     /**
@@ -412,21 +428,31 @@ public class chessTool {
             //设置所有可走位置
             setAllAvaliblePoint(chess);
         }
+        //发出两条消息,前一条使使死亡的对手仍然死亡,后一条将其救活,故组织后一条消息发出
         else if (chess >= 0) {
+            //对手将位置为4,每次执行都判断是否对方将消失
             if (searchInallSubscriptOfAvaliblePoint(currentLocation)) {
+                //下一步不能走子
+                isMeToMove = false;
                 //对方子消失
                 currentChessLocation.get(chess).isLive = false;
                 //己方子移过去
                 currentChessLocation.get(allSubscriptOfAvaliblePoint.get(0)).subScript = currentLocation;
-                //下一步不能走子
-                isMeToMove = false;
                 //发送需要处理的消息到子线程（这里吃子,故需要传递两个参数,己方哪个棋子到了哪里,对于那个位置原有的棋子,由传过去的位置来查找,然后将其置为不可见
                 int chessNumInOpponent = 31-allSubscriptOfAvaliblePoint.get(0);
                 int chessLocationInOpponent = 89-currentLocation;
                 Message msg = Message.obtain();
                 msg.arg1 = chessNumInOpponent;
                 msg.arg2 = chessLocationInOpponent;
-                msg.what = 111;
+                if (chess != 4) {
+                    msg.what = 111;
+                } else {
+                    //如果消失的棋子为对方将
+                    msg.what = 555;
+                    //dailog显示我方胜利
+                    Toast toast=Toast.makeText(doChess.getContext(), "你赢了", Toast.LENGTH_LONG);
+                    toast.show();
+                }
                 doChess.internetPartOfChess.mHandler.sendMessage(msg);
                 //最后清空
                 allSubscriptOfAvaliblePoint.clear();
