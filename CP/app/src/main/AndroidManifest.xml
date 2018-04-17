@@ -18,7 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".chess.ChessActivity" />
+        <activity android:name=".chess.ChessActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".music.MusicActivity"></activity>
     </application>
 

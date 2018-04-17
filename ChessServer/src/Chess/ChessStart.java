@@ -27,20 +27,17 @@ public class ChessStart {
 		ServerSocket ss = new ServerSocket(30000);
 		while (true)  {
 			Socket s = ss.accept();
-			System.out.println("Socket连接成功");
 			//如果一个组也没有，添加一个组
 			if (ChessStart.searchForUseful() == -1) {
 				SocketTeam socketteam = new SocketTeam();
 				socketteam.addSocket(s);
 				ChessStart.sockList.add(socketteam);
-				System.out.println("1");
 			} 
 			//如果有组满了
 			else if (ChessStart.searchForUseful() == -2){
 				SocketTeam socketteam = new SocketTeam();
 				socketteam.addSocket(s);
 				ChessStart.sockList.add(socketteam);
-				System.out.println("2");
 			}
 			//如果有组没满
 			else {
@@ -48,7 +45,6 @@ public class ChessStart {
 				int location = ChessStart.searchForUseful();
 				//向没满的位置添加	
 				ChessStart.sockList.get(location).addSocket(s);
-				System.out.println("3");
 			}
 			//最终对每一个连接成功的socket都直接启动一个新线程
 			new ServerThread(s).start();

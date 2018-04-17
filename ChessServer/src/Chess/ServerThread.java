@@ -59,9 +59,9 @@ public class ServerThread extends Thread {
 	    	int arg1 = dataInputStream.readInt();
 	    	int arg2 = dataInputStream.readInt();
 	    	int sign = dataInputStream.readInt();
-	    	//将消息发送给对手的socket
 	    	//获取本socket所对应组的下标
 	    	int subscript = getSubscriptBySocket();
+	    	//将消息发送给对手的socket
 	    	if (subscript >= 0) {
 	    		//如果本socket为socket1
 	    		if (mSocket.equals(ChessStart.sockList.get(subscript).socket1)) {
@@ -88,13 +88,18 @@ public class ServerThread extends Thread {
 		  //如果本socket断开连接,移除这个组
 		  int thisSubscript = getSubscriptBySocket();
 		  try {
-		  mSocket.close();
-		  ChessStart.sockList.get(thisSubscript).socket1.close();
-		  ChessStart.sockList.get(thisSubscript).socket2.close();
+	          //防止在另一个线程关闭资源在本线程再次关闭
+			  if (thisSubscript >= 0) {
+		          ChessStart.sockList.get(thisSubscript).socket1.close();
+		          //防止只有玩家重复进入，导致空指针异常
+		          if (ChessStart.sockList.get(thisSubscript).sign == 2)
+		        	  ChessStart.sockList.get(thisSubscript).socket2.close();
+			  }
 		  } catch(IOException e1) {
 			  e1.printStackTrace();
 		  }
-		  ChessStart.sockList.remove(thisSubscript);
+		  if (thisSubscript >= 0)
+			  ChessStart.sockList.remove(thisSubscript);
 		  e.printStackTrace();
 		  return;
 	  }

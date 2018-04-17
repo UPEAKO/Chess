@@ -30,7 +30,7 @@ public class InternetPartOfChess extends Thread{
         super.run();
         /*连接服务端,初始化输入输出流*/
         try {
-            socket = new Socket("172.96.219.84",30000);
+            socket = new Socket("172.96.219.84",30000);//172.96.219.84
             if (!socket.isConnected() || socket.isClosed()) {
                 Log.d("Socket连接诶", "run: 失败");
                 return;
@@ -44,7 +44,7 @@ public class InternetPartOfChess extends Thread{
         catch (IOException e) {
             e.printStackTrace();
         }
-
+        
         /*这里导致handler不能初始化*/
         /**
          * 在这个子线程中又开启一条子线程专门读取服务端传来的消息,并非共用一个子线程
