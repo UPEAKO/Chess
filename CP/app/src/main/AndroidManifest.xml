@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ubd.chess">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -18,9 +19,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".chess.ChessActivity"
+        <activity
+            android:name=".chess.ChessActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".music.MusicActivity"></activity>
+        <activity android:name=".music.MusicActivity" />
+
+        <service
+            android:name=".music.musicService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
