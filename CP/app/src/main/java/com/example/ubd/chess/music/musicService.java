@@ -18,6 +18,7 @@ public class musicService extends Service {
      * onCreate
      */
 
+
     MediaPlayer mediaPlayer = new MediaPlayer();
     //the music path list in sdcard
     ArrayList<String> lastPathList = new ArrayList<>();
@@ -29,6 +30,7 @@ public class musicService extends Service {
     private MyBinder myBinder = new MyBinder();
     //MusicObject
     private MusicThread musicThread;
+
 
     public musicService() {
 
@@ -71,15 +73,43 @@ public class musicService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        musicThread.interrupt();
+        //looper退出,子线程消息循环终止
+        musicThread.mLooper.quit();
         Log.d("functionTest", "onDestroy: onDestroy");
-        if (mediaPlayer != null&&mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
+        if (mediaPlayer != null) {
             mediaPlayer.release();
         }
     }
 
+    /**
+     * 遍历整个sdcard,找到所有音频文件
+     * 可以成功遍历，但比较耗时，除了虾米音乐，其余都是无意义的音频,需要新的遍历思路
+     * file.getName仅仅得到文件名，并不包含完整路径
+     */
+    private void getAllMusicInSdCard(File file) {
+        if (!file.exists())
+            return;
+        File[] fileList = file.listFiles();
+        if (fileList == null)
+            return;
+        for (File tempFile:fileList) {
+            //toString可获得完整路径
+            String string = tempFile.toString();
+            if (tempFile.isFile()&&(string.endsWith(".mp3")||string.endsWith(".wav"))) {
+                lastPathList.add(string);
+                Log.d("functionTest", "music: "+string);
+                }
+            else if(tempFile.isDirectory()) {
+
+                getAllMusicInSdCard(tempFile);
+            }
+        }
+    }
+
     public void initPlayer() {
+        //File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+        //use too much time
+        //getAllMusicInSdCard(file);
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/xiami/audios");
         File [] fileList = file.listFiles();
         if (fileList.length > 0)

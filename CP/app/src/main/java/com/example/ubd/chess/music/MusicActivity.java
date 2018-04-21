@@ -1,16 +1,22 @@
 package com.example.ubd.chess.music;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.example.ubd.chess.R;
+
+import java.io.File;
 
 public class MusicActivity extends AppCompatActivity {
     /**
@@ -18,6 +24,8 @@ public class MusicActivity extends AppCompatActivity {
      * 1.bindService在service未启动的情况下,也可以启动service并绑定；否则仅仅绑定
      * 2.startService仅仅启动服务
      */
+    //storage
+    File file;
 
     //musicService
     private musicService musicService;
@@ -35,14 +43,24 @@ public class MusicActivity extends AppCompatActivity {
         }
     };
 
+    ///sdcard/1688quick
+    ///storage/sdcard0/1688quick
+    ///storage/emulated/0/1688quick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("functionTest", "onCreate: musicActivityOnCreate");
         super.onCreate(savedInstanceState);
+        file = new File(this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"/musicURL");
+        boolean si = file.exists();
+        if (!si) {
+            file.mkdir();
+        }
         setContentView(R.layout.activity_music);
         Button button1 = findViewById(R.id.button1);
         Button button2 = findViewById(R.id.button2);
         Button button3 = findViewById(R.id.button3);
+        Button buttonSet = findViewById(R.id.buttonSetText);
+        final EditText editText = findViewById(R.id.editText);
         //start service directly
         Intent intent = new Intent(this,musicService.class);
         /**
@@ -55,6 +73,9 @@ public class MusicActivity extends AppCompatActivity {
          * 且系统只会创建一个Service实例（结束该Service也只需要调用一次stopService），
          * 该Service会一直在后台运行直至调用stopService或调用自身的stopSelf方法。
          */
+        //先传入MusicActivity实例
+
+        //启动服务
         startService(intent);
         /**
          * 问：当 flags 不等于 BIND_AUTO_CREATE 时，bindService还会自动启动service吗？
@@ -100,6 +121,14 @@ public class MusicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 musicService.nextMusic();
+            }
+        });
+        //setMusicURL
+        buttonSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String string = editText.getText().toString();
+                
             }
         });
     }

@@ -9,6 +9,7 @@ import java.io.IOException;
 public class MusicThread extends Thread {
     public Handler mHandler;
     private musicService musicService;
+    public Looper mLooper;
 
     public MusicThread(musicService musicService) {
         this.musicService = musicService;
@@ -17,9 +18,11 @@ public class MusicThread extends Thread {
     @Override
     public void run() {
         super.run();
+        android.util.Log.d("functionTest", "Thread1");
         musicService.initPlayer();
+        android.util.Log.d("functionTest", "Thread2");
         Looper.prepare();
-        Looper mLooper = Looper.myLooper();
+        mLooper = Looper.myLooper();
         mHandler = new Handler(mLooper) {
             @Override
             public void handleMessage(Message msg) {
@@ -48,5 +51,6 @@ public class MusicThread extends Thread {
             }
         };
         Looper.loop();
+        android.util.Log.d("functionTest", "Thread3");
     }
 }
