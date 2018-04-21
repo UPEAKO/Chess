@@ -39,6 +39,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/next"/>
+        <Button
+            android:id="@+id/buttonUrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/playUrl"/>
+        <Button
+            android:id="@+id/buttonNextUrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/nexUrl"/>
 
     </LinearLayout>
 

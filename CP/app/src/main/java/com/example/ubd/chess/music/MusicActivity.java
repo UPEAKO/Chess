@@ -1,22 +1,16 @@
 package com.example.ubd.chess.music;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.ubd.chess.R;
-
-import java.io.File;
 
 public class MusicActivity extends AppCompatActivity {
     /**
@@ -25,7 +19,7 @@ public class MusicActivity extends AppCompatActivity {
      * 2.startService仅仅启动服务
      */
     //storage
-    File file;
+    //File file;
 
     //musicService
     private musicService musicService;
@@ -43,23 +37,27 @@ public class MusicActivity extends AppCompatActivity {
         }
     };
 
+    //这些为软链接
     ///sdcard/1688quick
     ///storage/sdcard0/1688quick
+    //实际位置
     ///storage/emulated/0/1688quick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("functionTest", "onCreate: musicActivityOnCreate");
         super.onCreate(savedInstanceState);
-        file = new File(this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"/musicURL");
+        //创建外部存储中的私有文件，以包名分类;apk文件在data中
+        /*file = new File(this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"/musicURL");
         boolean si = file.exists();
         if (!si) {
             file.mkdir();
-        }
+        }*/
         setContentView(R.layout.activity_music);
         Button button1 = findViewById(R.id.button1);
         Button button2 = findViewById(R.id.button2);
         Button button3 = findViewById(R.id.button3);
         Button buttonSet = findViewById(R.id.buttonSetText);
+        Button buttonUrl = findViewById(R.id.buttonUrl);
+        Button buttonUrlNext = findViewById(R.id.buttonNextUrl);
         final EditText editText = findViewById(R.id.editText);
         //start service directly
         Intent intent = new Intent(this,musicService.class);
@@ -73,7 +71,6 @@ public class MusicActivity extends AppCompatActivity {
          * 且系统只会创建一个Service实例（结束该Service也只需要调用一次stopService），
          * 该Service会一直在后台运行直至调用stopService或调用自身的stopSelf方法。
          */
-        //先传入MusicActivity实例
 
         //启动服务
         startService(intent);
@@ -128,17 +125,32 @@ public class MusicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String string = editText.getText().toString();
-                
+                musicService.writeMyURL(string);
+                editText.setText("");
             }
         });
+        //getMusicURL by sign and player it
+        buttonUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String string = musicService.readMyURL("1");
+                musicService.UrlMusic(string);
+            }
+        });
+        //Url next
+        buttonUrlNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                musicService.nextUrlMusic();
+            }
+        });
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //activity挂了，自动解除绑定
-        Log.d("functionTest", "onDestroy: musicActivityOnDestroy");
-        //此处解除绑定存在问题，显示未注册
         if (!musicService.mediaPlayer.isPlaying()) {
             musicService.stopSelf();
         }

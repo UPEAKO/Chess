@@ -1,5 +1,6 @@
 package com.example.ubd.chess.music;
 
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -18,9 +19,7 @@ public class MusicThread extends Thread {
     @Override
     public void run() {
         super.run();
-        android.util.Log.d("functionTest", "Thread1");
         musicService.initPlayer();
-        android.util.Log.d("functionTest", "Thread2");
         Looper.prepare();
         mLooper = Looper.myLooper();
         mHandler = new Handler(mLooper) {
@@ -47,10 +46,43 @@ public class MusicThread extends Thread {
                         }
                         musicService.mediaPlayer.start();
                         break;
+                    case 4:
+                        String URL = (String) msg.obj;
+                        musicService.mediaPlayer.stop();
+                        musicService.mediaPlayer.reset();
+                        try {
+                            musicService.mediaPlayer.setDataSource(URL);
+                            musicService.mediaPlayer.prepareAsync();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        musicService.mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                musicService.mediaPlayer.start();
+                            }
+                        });
+                        break;
+                    case 5:
+                        String URlNext = (String) msg.obj;
+                        musicService.mediaPlayer.stop();
+                        musicService.mediaPlayer.reset();
+                        try {
+                            musicService.mediaPlayer.setDataSource(URlNext);
+                            musicService.mediaPlayer.prepareAsync();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        musicService.mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                musicService.mediaPlayer.start();
+                            }
+                        });
+                        break;
                 }
             }
         };
         Looper.loop();
-        android.util.Log.d("functionTest", "Thread3");
     }
 }
