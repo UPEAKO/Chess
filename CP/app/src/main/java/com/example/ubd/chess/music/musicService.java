@@ -1,9 +1,7 @@
 package com.example.ubd.chess.music;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Environment;
@@ -11,17 +9,18 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import com.example.ubd.chess.R;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class musicService extends Service {
-    //storage，标志为sharedPrefForsign的值
+    /**
+     * 放弃SharedPreferences
+     */
+    /*//storage，标志为sharedPrefForsign的值
     SharedPreferences sharedPref;
     //为sharedPref记录位置，标志固定为sign,即其中只有一个数据
-    SharedPreferences sharedPrefForsign;
+    SharedPreferences sharedPrefForsign;*/
     MediaPlayer mediaPlayer = new MediaPlayer();
     //the music path list in sdcard
     ArrayList<String> lastPathList = new ArrayList<>();
@@ -36,16 +35,24 @@ public class musicService extends Service {
     //MusicObject
     private MusicThread musicThread;
 
+    /**
+     * 数据库实例
+     */
+    MusicDatabaseHelper musicDatabaseHelper;
+
 
     public musicService() {
 
     }
 
     /**
-     * write
+     * 插入歌曲数据，一条一条插入
      */
-    public void writeMyURL(String string) {
-        int defaultNum = 0;
+    public void writeMyURL(String stringUrl,String stringSongName) {
+        /**
+         * 放弃SharedPreferences，使用sqllite,因为歌曲获取困难，标志太少
+         */
+        /*int defaultNum = 0;
         int sign = sharedPrefForsign.getInt("sign",defaultNum);
         SharedPreferences.Editor editorForSign = sharedPrefForsign.edit();
         editorForSign.putInt("sign",++sign);
@@ -54,15 +61,23 @@ public class musicService extends Service {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(Integer.toString(sign),string);
         //异步写入
-        editor.apply();
+        editor.apply();*/
+        /**
+         * 插入歌曲数据
+         */
+        musicDatabaseHelper.getReadableDatabase().execSQL("insert into music values(null,?,?)",new String[] {stringUrl,stringSongName});
     }
 
     /**
-     * read
+     * 读取歌曲数据，要满足recyclerView，有待考虑
      */
     public String readMyURL(String string) {
-        String defaultURL = getString(R.string.defaultURL);
-        return sharedPref.getString(string,defaultURL);
+        /**
+         * 放弃SharedPreferences
+         */
+        /*String defaultURL = getString(R.string.defaultURL);
+        return sharedPref.getString(string,defaultURL);*/
+        return "";
     }
 
     //personal binder definition
@@ -85,11 +100,29 @@ public class musicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        /**
+         * 数据库建立
+         */
+        musicDatabaseHelper = new MusicDatabaseHelper(this,"musicDatabase",1);
         //new thread
         musicThread = new MusicThread(this);
         musicThread.start();
-        sharedPref = this.getSharedPreferences(getString(R.string.pre_key),Context.MODE_PRIVATE);
-        sharedPrefForsign = this.getSharedPreferences(getString(R.string.pre_key_sign),Context.MODE_PRIVATE);
+        /**
+         * SharedPreferences放弃
+         */
+        //sharedPref = this.getSharedPreferences(getString(R.string.pre_key),Context.MODE_PRIVATE);
+        //sharedPrefForsign = this.getSharedPreferences(getString(R.string.pre_key_sign),Context.MODE_PRIVATE);
+        /**
+         * 监听并自动播放下一首
+         */
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                Message msg = Message.obtain();
+                msg.what = 6;
+                musicThread.mHandler.sendMessage(msg);
+            }
+        });
     }
 
 
@@ -189,7 +222,10 @@ public class musicService extends Service {
     }
 
     public void nextUrlMusic() {
-        UrlLocation ++;
+        /**
+         * SharedPreferences放弃
+         */
+        /*UrlLocation ++;
         int allMusic = sharedPrefForsign.getInt("sign",1);
         //%防止超出当前歌曲的范围
         UrlLocation = UrlLocation%allMusic;
@@ -198,6 +234,6 @@ public class musicService extends Service {
         Message msg = Message.obtain();
         msg.what = 5;
         msg.obj = string;
-        musicThread.mHandler.sendMessage(msg);
+        musicThread.mHandler.sendMessage(msg);*/
     }
 }

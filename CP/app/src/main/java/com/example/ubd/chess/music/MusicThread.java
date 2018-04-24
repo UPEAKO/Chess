@@ -80,6 +80,19 @@ public class MusicThread extends Thread {
                             }
                         });
                         break;
+                    case 6:
+                        musicService.mediaPlayer.stop();
+                        musicService.mediaPlayer.reset();
+                        musicService.location++;
+                        musicService.location = musicService.location%musicService.len;
+                        try {
+                            musicService.mediaPlayer.setDataSource(musicService.lastPathList.get(musicService.location));
+                            musicService.mediaPlayer.prepare();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        musicService.mediaPlayer.start();
+                        break;
                 }
             }
         };

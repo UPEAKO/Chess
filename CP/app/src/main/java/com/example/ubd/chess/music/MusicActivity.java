@@ -52,13 +52,18 @@ public class MusicActivity extends AppCompatActivity {
             file.mkdir();
         }*/
         setContentView(R.layout.activity_music);
+        /**
+         * 这些操作针对本地音乐
+         */
         Button button1 = findViewById(R.id.button1);
         Button button2 = findViewById(R.id.button2);
         Button button3 = findViewById(R.id.button3);
+        /**
+         * 添加新歌
+         */
         Button buttonSet = findViewById(R.id.buttonSetText);
-        Button buttonUrl = findViewById(R.id.buttonUrl);
-        Button buttonUrlNext = findViewById(R.id.buttonNextUrl);
         final EditText editText = findViewById(R.id.editText);
+        final EditText editTextSongName = findViewById(R.id.editTextSongName);
         //start service directly
         Intent intent = new Intent(this,musicService.class);
         /**
@@ -124,24 +129,11 @@ public class MusicActivity extends AppCompatActivity {
         buttonSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String string = editText.getText().toString();
-                musicService.writeMyURL(string);
+                String stringUrl = editText.getText().toString();
+                String stringName = editTextSongName.getText().toString();
+                musicService.writeMyURL(stringUrl,stringName);
                 editText.setText("");
-            }
-        });
-        //getMusicURL by sign and player it
-        buttonUrl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String string = musicService.readMyURL("1");
-                musicService.UrlMusic(string);
-            }
-        });
-        //Url next
-        buttonUrlNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                musicService.nextUrlMusic();
+                editTextSongName.setText("");
             }
         });
 
