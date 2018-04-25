@@ -6,14 +6,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MusicDatabaseHelper extends SQLiteOpenHelper {
     /**
-     * 表生成语句
-     */
-    final String CREATE_TABLE_SQL = "create table musicUrl(id integer primary key autoincrement,url,musicName)";
-
-    /**
      * 构造函数
      */
-    public MusicDatabaseHelper(Context context,String name,int version){
+    MusicDatabaseHelper(Context context, String name, int version){
         super(context,name,null,version);
     }
 
@@ -22,9 +17,9 @@ public class MusicDatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        /**
-         * 此处可以建立自己的数据库的表结构
-         */
+        /*表生成语句*/
+        final String CREATE_TABLE_SQL = "create table musicUrl(id integer primary key autoincrement,url,musicName)";
+        /*此处可以建立自己的数据库的表结构*/
         db.execSQL(CREATE_TABLE_SQL);
     }
 

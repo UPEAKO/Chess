@@ -12,7 +12,7 @@ public class MusicThread extends Thread {
     private musicService musicService;
     public Looper mLooper;
 
-    public MusicThread(musicService musicService) {
+    MusicThread(musicService musicService) {
         this.musicService = musicService;
     }
 

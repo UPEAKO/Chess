@@ -1,13 +1,10 @@
 <resources>
-    <string name="app_name">Chess</string>
+    <string name="app_name">Forever</string>
     <string name="button1">Chess</string>
     <string name="button2">music</string>
     <string name="start">start</string>
     <string name="pause">pause</string>
     <string name="next">next</string>
-    <string name="playUrl">uts</string>
-    <string name="nexUrl">utn</string>
-    <string name="pre_key">com.example.ubd.chess.music.pre1</string>
-    <string name="pre_key_sign">com.example.ubd.chess.music.preSign</string>
+    <string name="songName">songName</string>
     <string name="defaultURL">http://m128.xiami.net/102/81102/2102764358/1795969110_1497321468147.mp3?auth_key=1524884400-0-0-05e892ccbe4b843cdf69a89bdba57388</string>
 </resources>
