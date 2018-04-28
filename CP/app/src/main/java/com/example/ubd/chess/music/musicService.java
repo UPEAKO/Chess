@@ -113,7 +113,7 @@ public class musicService extends Service {
                 mediaPlayer.setDataSource(str);
                 /*must prepare at first*/
                 mediaPlayer.prepare();
-                mediaPlayer.start();
+                //mediaPlayer.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }

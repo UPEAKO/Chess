@@ -1,21 +1,22 @@
 package com.example.ubd.chess.music;
 
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -26,6 +27,7 @@ import com.example.ubd.chess.R;
 public class MusicActivity extends FirstActivity {
     public musicService musicService;
     public MusicDatabaseHelper musicDatabaseHelper;
+    MusicAdapter musicAdapter;
     /**
      * activity与service的链接
      */
@@ -105,7 +107,7 @@ public class MusicActivity extends FirstActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        MusicAdapter musicAdapter = new MusicAdapter(this);
+        musicAdapter = new MusicAdapter(this);
         /*添加默认分割线*/
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(musicAdapter);
@@ -137,7 +139,51 @@ public class MusicActivity extends FirstActivity {
      */
     public void writeMyURL(String stringUrl,String stringSongName) {
         /*插入歌曲数据*/
-        musicDatabaseHelper.getReadableDatabase().execSQL("insert into musicUrl values(null,?,?)",new String[] {stringUrl,stringSongName});
+        SQLiteDatabase database = musicDatabaseHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("select * from musicUrl",null);
+        if (cursor.getCount() > 0) {
+            int insertLocation = cursor.getCount();
+            database.execSQL("insert into musicUrl values(?,?,?)",new String[] {Integer.toString(insertLocation),stringUrl,stringSongName});
+        } else {
+            database.execSQL("insert into musicUrl values(0,?,?)",new String[] {stringUrl,stringSongName});
+        }
+        cursor.close();
+    }
+
+    /**
+     * 删除歌曲数据
+     */
+    public void doForDelete(final int position) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setMessage("delete");
+        dialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                musicAdapter.notifyItemRemoved(position);
+                musicAdapter.notifyItemRangeChanged(position,musicAdapter.getItemCount());
+                //musicAdapter.notifyDataSetChanged();
+                /*删除并改变所有受影响的编号*/
+                SQLiteDatabase database = musicDatabaseHelper.getReadableDatabase();
+                /*删除*/
+                database.execSQL("delete from musicUrl where id=?",new String[] {Integer.toString(position)});
+                /*所有后面的数据id均减一*/
+                Cursor cursor = database.rawQuery("select * from musicUrl where id>?",new String[] {Integer.toString(position)});
+                int newPosition = position;
+                while(cursor.moveToNext()) {
+                    database.execSQL("update musicUrl set id=? where id=?",new String[] {Integer.toString(newPosition),Integer.toString(newPosition+1)});
+                    newPosition++;
+                    Log.d("testLongClick", "位置："+newPosition);
+                }
+                cursor.close();
+            }
+        });
+        dialog.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        dialog.show();
     }
 
     @Override
@@ -158,11 +204,10 @@ public class MusicActivity extends FirstActivity {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutInflater().inflate(R.layout.add_music,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         /*relativeLayout.findViewById(R.id.buttonSetText)与findViewById(R.id.buttonSetText)不同，后者不能初始化button*/
-        Button buttonSet = relativeLayout.findViewById(R.id.buttonSetText);
         builder.setView(relativeLayout);
-        buttonSet.setOnClickListener(new View.OnClickListener() {
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(DialogInterface dialog, int which) {
                 /*添加新歌*/
                 EditText editText = relativeLayout.findViewById(R.id.editText);
                 EditText editTextSongName = relativeLayout.findViewById(R.id.editTextSongName);
@@ -171,6 +216,12 @@ public class MusicActivity extends FirstActivity {
                 writeMyURL(stringUrl,stringName);
                 editText.setText("");
                 editTextSongName.setText("");
+            }
+        });
+        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
             }
         });
        builder.show();
@@ -184,8 +235,6 @@ public class MusicActivity extends FirstActivity {
         switch(item.getItemId()) {
             case R.id.item_test1:
                 doForItemAdd();
-                return true;
-            case R.id.item_test2:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

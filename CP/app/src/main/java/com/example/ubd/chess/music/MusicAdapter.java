@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,8 +64,18 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder/*
         viewHolder.eachView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = (String) v.getTag();
-                musicActivity.musicService.currentUrlMusic(url);
+                TagInfo tagInfo = (TagInfo) v.getTag();
+                musicActivity.musicService.currentUrlMusic(tagInfo.url);
+            }
+        });
+        /*长点击弹出dialog，确认删除*/
+        viewHolder.eachView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Log.d("testLongClick", "onLongClick: myLongClick");
+                TagInfo tagInfo = (TagInfo) v.getTag();
+                musicActivity.doForDelete(tagInfo.position);
+                return true;
             }
         });
         return viewHolder;
@@ -80,7 +91,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder/*
          *虽然主键为integer,也可通过string查询
          *viewHolder索引从0开始，sql表自增从1开始
          */
-        Cursor cursor = database.rawQuery("select * from musicUrl where id=? ",new String[] {Integer.toString(position+1)});
+        Cursor cursor = database.rawQuery("select * from musicUrl where id=? ",new String[] {Integer.toString(position)});
         if (cursor.getCount() > 0) {
             /*cursor返回的list默认指针在-1
              *调用下一句才到达0
@@ -90,7 +101,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder/*
             String songName = cursor.getString(index);
             String url = cursor.getString(cursor.getColumnIndex("url"));
             /*将查询到的信息进行设置*/
-            holder.eachView.setTag(url);
+            TagInfo tagInfo = new TagInfo(url,position);
+            holder.eachView.setTag(tagInfo);
             holder.nameView.setText(songName);
             cursor.close();
         } else {
@@ -106,6 +118,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder/*
             count = cursor.getCount();
             cursor.close();
         }
+        Log.d("testLongClick", "表大小"+count);
         return count;
     }
 }

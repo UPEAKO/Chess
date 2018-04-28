@@ -6,8 +6,4 @@
         android:icon="@drawable/ic_add_black_24dp"
         android:title="@string/next"
         app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/item_test2"
-        android:title="@string/delete"
-        app:showAsAction="ifRoom"/>
 </menu>
