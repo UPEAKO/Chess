@@ -27,9 +27,9 @@
         <service
             android:name=".music.musicService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"></service>
 
-        </service>
+        <activity android:name=".FirstActivity"></activity>
     </application>
 
 </manifest>

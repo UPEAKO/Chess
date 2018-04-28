@@ -23,7 +23,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="72" />
+                                                <entry key="scalingPercent" value="160" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -33,7 +33,7 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="foregroundImage" value="$USER_HOME$/图片/images.jpeg" />
+                                      <entry key="foregroundImage" value="$USER_HOME$/图片/forever.jpeg" />
                                     </map>
                                   </option>
                                 </PersistentState>

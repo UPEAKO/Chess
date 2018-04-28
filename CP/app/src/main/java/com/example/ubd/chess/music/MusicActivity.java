@@ -4,21 +4,28 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
+import com.example.ubd.chess.FirstActivity;
 import com.example.ubd.chess.R;
 
-public class MusicActivity extends AppCompatActivity {
+public class MusicActivity extends FirstActivity {
     public musicService musicService;
     public MusicDatabaseHelper musicDatabaseHelper;
-
     /**
      * activity与service的链接
      */
@@ -83,10 +90,11 @@ public class MusicActivity extends AppCompatActivity {
         Button button1 = findViewById(R.id.button1);
         Button button2 = findViewById(R.id.button2);
         Button button3 = findViewById(R.id.button3);
-        /*添加新歌*/
-        Button buttonSet = findViewById(R.id.buttonSetText);
-        final EditText editText = findViewById(R.id.editText);
-        final EditText editTextSongName = findViewById(R.id.editTextSongName);
+        /*toolbar设置*/
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        ///隐藏action bar
+        ///getSupportActionBar().hide();
         /*启动并绑定服务*/
         Intent intent = new Intent(this,musicService.class);
         startService(intent);
@@ -122,17 +130,6 @@ public class MusicActivity extends AppCompatActivity {
                 musicService.nextMusic();
             }
         });
-        /*将音乐链接存入数据库*/
-        buttonSet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String stringUrl = editText.getText().toString();
-                String stringName = editTextSongName.getText().toString();
-                writeMyURL(stringUrl,stringName);
-                editText.setText("");
-                editTextSongName.setText("");
-            }
-        });
     }
 
     /**
@@ -152,5 +149,56 @@ public class MusicActivity extends AppCompatActivity {
         if (!musicService.mediaPlayer.isPlaying()) {
             musicService.stopSelf();
         }
+    }
+
+    /**
+     * 处理菜单项事件
+     */
+    private void doForItemAdd() {
+        final RelativeLayout relativeLayout = (RelativeLayout) getLayoutInflater().inflate(R.layout.add_music,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        /*relativeLayout.findViewById(R.id.buttonSetText)与findViewById(R.id.buttonSetText)不同，后者不能初始化button*/
+        Button buttonSet = relativeLayout.findViewById(R.id.buttonSetText);
+        builder.setView(relativeLayout);
+        buttonSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*添加新歌*/
+                EditText editText = relativeLayout.findViewById(R.id.editText);
+                EditText editTextSongName = relativeLayout.findViewById(R.id.editTextSongName);
+                String stringUrl = editText.getText().toString();
+                String stringName = editTextSongName.getText().toString();
+                writeMyURL(stringUrl,stringName);
+                editText.setText("");
+                editTextSongName.setText("");
+            }
+        });
+       builder.show();
+    }
+
+    /**
+     *菜单项对应事件处理
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.item_test1:
+                doForItemAdd();
+                return true;
+            case R.id.item_test2:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    /**
+     *将菜单项加载进来
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.bar_item,menu);
+        return true;
     }
 }
