@@ -30,7 +30,7 @@ public class InternetPartOfChess extends Thread{
         super.run();
         /*连接服务端,初始化输入输出流*/
         try {
-            socket = new Socket("172.96.219.84",30000);//172.96.219.84
+            socket = new Socket("104.224.134.83",30000);//172.96.219.84
             if (!socket.isConnected() || socket.isClosed()) {
                 Log.d("Socket连接诶", "run: 失败");
                 return;
